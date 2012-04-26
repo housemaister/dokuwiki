@@ -41,6 +41,9 @@ class PassHash {
             $method = 'pmd5';
             $salt   = $m[1];
             $magic  = 'H';
+        }elseif(preg_match('/^vcms\$(.{30})\$/',$hash,$m)){
+            $method = 'vcmssha1';
+            $salt   = $m[1];
         }elseif(preg_match('/^sha1\$(.{5})\$/',$hash,$m)){
             $method = 'djangosha1';
             $salt   = $m[1];
@@ -377,6 +380,22 @@ class PassHash {
     public function hash_djangomd5($clear, $salt=null){
         $this->init_salt($salt,5);
         return 'md5$'.$salt.'$'.md5($salt.$clear);
+    }
+
+        /**
+     * Password hashing method 'vcmssha1'
+     *
+     * Uses salted SHA1 hashs. Salt is 30 bytes long.
+     * This is used by the Verbindungscms
+     *
+     * @link none
+     * @param string $clear - the clear text to hash
+     * @param string $salt  - the salt to use, null for random
+     * @returns string - hashed password
+     */
+    public function hash_vcmssha1($clear, $salt=null){
+        $this->init_salt($salt,30);
+        return 'vcms$'.$salt.'$'.sha1($salt.$clear);
     }
 
 }
